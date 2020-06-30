@@ -31,30 +31,6 @@ func Benchmark_TraverseSliceOfInts_Reverse(b *testing.B) {
 	}
 }
 
-func Benchmark_TraverseSliceOfInts_Add(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := 0; i < iteration; {
-			sum += s[i]
-			i += s[i]
-		}
-	}
-}
-
-func Benchmark_TraverseSliceOfInts_Reverse_Add(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := iteration - 1; i >= 0; {
-			sum += s[i]
-			i -= s[i]
-		}
-	}
-}
-
 //func Benchmark_TraverseLinkedList_BoundSize(b *testing.B) {
 //	root := createLinkedList(iteration)
 //	b.ResetTimer()
