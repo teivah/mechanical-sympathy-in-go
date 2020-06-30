@@ -1,3 +1,3 @@
-module mechanical-sympathy-in-go
+module github.com/teivah/mechanical-sympathy-in-go
 
 go 1.14
