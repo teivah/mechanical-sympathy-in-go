@@ -9,16 +9,16 @@ const (
 	CacheLinePadSize = 64
 )
 
-func Benchmark_TraverseSliceOfInts(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := 0; i < iteration; i++ {
-			sum += s[i]
-		}
-	}
-}
+//func Benchmark_TraverseSliceOfInts(b *testing.B) {
+//	s := createSlice(iteration)
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		sum := 0
+//		for i := 0; i < iteration; i++ {
+//			sum += s[i]
+//		}
+//	}
+//}
 
 //func Benchmark_TraverseSliceOfInts_Reverse(b *testing.B) {
 //	s := createSlice(iteration)
@@ -173,4 +173,33 @@ func createMatrix(n int) [][]int {
 		}
 	}
 	return matrix
+}
+
+func Benchmark_Vectorization1(b *testing.B) {
+	it := 4 * 1_000_000
+	x := createSlice(it)
+	y := createSlice(it)
+	res := createSlice(it)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < it; i++ {
+			res[i] = x[i] + y[i]
+		}
+	}
+}
+
+func Benchmark_Vectorization2(b *testing.B) {
+	it := 4 * 1_000_000
+	x := createSlice(it)
+	y := createSlice(it)
+	res := createSlice(it)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < it; i += 4 {
+			res[i] = x[i] + y[i]
+			res[i+1] = x[i+1] + y[i+1]
+			res[i+2] = x[i+2] + y[i+2]
+			res[i+3] = x[i+3] + y[i+3]
+		}
+	}
 }
