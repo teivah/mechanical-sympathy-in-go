@@ -203,3 +203,19 @@ func Benchmark_Vectorization2(b *testing.B) {
 		}
 	}
 }
+
+func Benchmark_Vectorization3(b *testing.B) {
+	it := 4 * 1_000_000
+	x := createSlice(it)
+	y := x
+	res := x
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < it; i += 4 {
+			res[i] = x[i] + y[i]
+			res[i+1] = x[i+1] + y[i+1]
+			res[i+2] = x[i+2] + y[i+2]
+			res[i+3] = x[i+3] + y[i+3]
+		}
+	}
+}
