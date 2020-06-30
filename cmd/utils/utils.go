@@ -2,7 +2,6 @@ package utils
 
 const (
 	defaultValue = 1
-	Iteration    = 10_000_000
 )
 
 func CreateSlice(n int) []int {
