@@ -20,48 +20,16 @@ func Benchmark_TraverseSliceOfInts(b *testing.B) {
 	}
 }
 
-func Benchmark_TraverseSliceOfInts_Reverse(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := iteration - 1; i >= 0; i-- {
-			sum += s[i]
-		}
-	}
-}
-
-func Benchmark_TraverseSliceOfInts_v2(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := 0; i < iteration; {
-			sum += s[i]
-			if i%2 == 0 {
-				i++
-			} else {
-				i += 2
-			}
-		}
-	}
-}
-
-func Benchmark_TraverseSliceOfInts_Reverse_v2(b *testing.B) {
-	s := createSlice(iteration)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sum := 0
-		for i := iteration - 1; i >= 10; {
-			sum += s[i]
-			if i%2 == 0 {
-				i--
-			} else {
-				i -= 2
-			}
-		}
-	}
-}
+//func Benchmark_TraverseSliceOfInts_Reverse(b *testing.B) {
+//	s := createSlice(iteration)
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		sum := 0
+//		for i := iteration - 1; i >= 0; i-- {
+//			sum += s[i]
+//		}
+//	}
+//}
 
 //func Benchmark_TraverseLinkedList_BoundSize(b *testing.B) {
 //	root := createLinkedList(iteration)

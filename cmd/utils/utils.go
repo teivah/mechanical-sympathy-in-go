@@ -40,3 +40,20 @@ type Element2 struct {
 	Values    []int
 	Something [][1024]byte
 }
+
+func CreateLinkedList(n int) *Node {
+	root := &Node{Value: defaultValue}
+	current := root
+
+	for i := 0; i < n; i++ {
+		node := &Node{Value: defaultValue}
+		current.Next = node
+		current = node
+	}
+	return root
+}
+
+type Node struct {
+	Value int
+	Next  *Node
+}
