@@ -1,12 +1,8 @@
 package tests
 
-import "testing"
-
-const (
-	defaultValue     = 1
-	iteration        = 1_000_000
-	matrix           = 1_000
-	CacheLinePadSize = 64
+import (
+	"sync"
+	"testing"
 )
 
 //func Benchmark_TraverseSliceOfInts(b *testing.B) {
@@ -19,7 +15,7 @@ const (
 //		}
 //	}
 //}
-
+//
 //func Benchmark_TraverseSliceOfInts_Reverse(b *testing.B) {
 //	s := createSlice(iteration)
 //	b.ResetTimer()
@@ -57,6 +53,18 @@ const (
 //	}
 //}
 
+//// Constant stride
+//func Benchmark_TraverseSliceOfElementOnly(b *testing.B) {
+//	s := createElementOnly(iteration)
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		sum := 0
+//		for i := 0; i < iteration; i++ {
+//			sum += s[i].value
+//		}
+//	}
+//}
+//
 //// Constant stride
 //func Benchmark_TraverseSliceOfStructures(b *testing.B) {
 //	s := createSliceOfStructures(iteration)
@@ -107,115 +115,52 @@ const (
 //	}
 //}
 
-func createSlice(n int) []int {
-	s := make([]int, n)
-	for i := 0; i < n; i++ {
-		s[i] = defaultValue
-	}
-	return s
-}
+func BenchmarkStructureFalseSharing(b *testing.B) {
+	structA := SimpleStruct{}
+	structB := SimpleStruct{}
+	wg := sync.WaitGroup{}
 
-func createLinkedList(n int) *Node {
-	root := &Node{value: defaultValue}
-	current := root
-
-	for i := 0; i < n; i++ {
-		node := &Node{value: defaultValue}
-		current.next = node
-		current = node
-	}
-	return root
-}
-
-type Node struct {
-	value int
-	next  *Node
-}
-
-func createSliceOfStructures(n int) []Element {
-	s := make([]Element, n)
-	for i := 0; i < n; i++ {
-		s[i] = Element{
-			value: defaultValue,
-		}
-	}
-	return s
-}
-
-type Element struct {
-	value     int
-	something [1024]byte
-}
-
-func createStructureOfSlices(n int) Element2 {
-	elem := Element2{
-		values:    make([]int, n),
-		something: make([][1024]byte, n),
-	}
-
-	for i := 0; i < n; i++ {
-		elem.values[i] = defaultValue
-	}
-	return elem
-}
-
-type Element2 struct {
-	values    []int
-	something [][1024]byte
-}
-
-func createMatrix(n int) [][]int {
-	matrix := make([][]int, n)
-	for i := 0; i < n; i++ {
-		matrix[i] = make([]int, n)
-		for j := 0; j < n; j++ {
-			matrix[i][j] = defaultValue
-		}
-	}
-	return matrix
-}
-
-func Benchmark_Vectorization1(b *testing.B) {
-	it := 4 * 1_000_000
-	x := createSlice(it)
-	y := createSlice(it)
-	res := createSlice(it)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for i := 0; i < it; i++ {
-			res[i] = x[i] + y[i]
-		}
+		wg.Add(2)
+		go func() {
+			for j := 0; j < iteration; j++ {
+				structA.n += j
+			}
+			wg.Done()
+		}()
+		go func() {
+			for j := 0; j < iteration; j++ {
+				structB.n += j
+			}
+			wg.Done()
+		}()
+		wg.Wait()
 	}
+	b.StopTimer()
 }
 
-func Benchmark_Vectorization2(b *testing.B) {
-	it := 4 * 1_000_000
-	x := createSlice(it)
-	y := createSlice(it)
-	res := createSlice(it)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for i := 0; i < it; i += 4 {
-			res[i] = x[i] + y[i]
-			res[i+1] = x[i+1] + y[i+1]
-			res[i+2] = x[i+2] + y[i+2]
-			res[i+3] = x[i+3] + y[i+3]
-		}
-	}
-}
+func BenchmarkStructurePadding(b *testing.B) {
+	structA := PaddedStruct{}
+	structB := SimpleStruct{}
+	wg := sync.WaitGroup{}
 
-func Benchmark_Vectorization3(b *testing.B) {
-	it := 4 * 1_000_000
-	x := createSlice(it)
-	y := x
-	res := x
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for i := 0; i < it; i += 4 {
-			res[i] = x[i] + y[i]
-			res[i+1] = x[i+1] + y[i+1]
-			res[i+2] = x[i+2] + y[i+2]
-			res[i+3] = x[i+3] + y[i+3]
-		}
+		wg.Add(2)
+		go func() {
+			for j := 0; j < iteration; j++ {
+				structA.n += j
+			}
+			wg.Done()
+		}()
+		go func() {
+			for j := 0; j < iteration; j++ {
+				structB.n += j
+			}
+			wg.Done()
+		}()
+		wg.Wait()
 	}
+	b.StopTimer()
 }
