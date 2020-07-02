@@ -1,11 +1,12 @@
 package main
 
 import (
-	"compress/flate"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
+
+	flate "github.com/teivah/mechanical-sympathy-in-go/cmd/flate2"
 )
 
 func main() {
