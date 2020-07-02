@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"sync"
+	"runtime"
 	"testing"
 )
 
@@ -115,52 +115,187 @@ import (
 //	}
 //}
 
-func BenchmarkStructureFalseSharing(b *testing.B) {
-	structA := SimpleStruct{}
-	structB := SimpleStruct{}
-	wg := sync.WaitGroup{}
+//func BenchmarkStructureFalseSharing(b *testing.B) {
+//	structA := SimpleStruct{}
+//	structB := SimpleStruct{}
+//	wg := sync.WaitGroup{}
+//
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		wg.Add(2)
+//		go func() {
+//			for j := 0; j < iteration; j++ {
+//				structA.n += j
+//			}
+//			wg.Done()
+//		}()
+//		go func() {
+//			for j := 0; j < iteration; j++ {
+//				structB.n += j
+//			}
+//			wg.Done()
+//		}()
+//		wg.Wait()
+//	}
+//	b.StopTimer()
+//}
+//
+//func BenchmarkStructurePadding(b *testing.B) {
+//	structA := PaddedStruct{}
+//	structB := SimpleStruct{}
+//	wg := sync.WaitGroup{}
+//
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		wg.Add(2)
+//		go func() {
+//			for j := 0; j < iteration; j++ {
+//				structA.n += j
+//			}
+//			wg.Done()
+//		}()
+//		go func() {
+//			for j := 0; j < iteration; j++ {
+//				structB.n += j
+//			}
+//			wg.Done()
+//		}()
+//		wg.Wait()
+//	}
+//	b.StopTimer()
+//}
 
+// False sharing example
+//var result int
+//
+//func BenchmarkStructureFalseSharing(b *testing.B) {
+//	s := createSlice(iterationFalseSharing)
+//	var counter Result
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		counter = countOdds(s)
+//	}
+//	b.StopTimer()
+//	result = counter.odds
+//}
+//
+//type Result struct {
+//	odds int
+//}
+//
+//func countOdds(s []int) Result {
+//	counter := Result{}
+//	for i := 0; i < len(s); i++ {
+//		if s[i]%2 == 0 {
+//			counter.odds++
+//		}
+//	}
+//	return counter
+//}
+//
+//func BenchmarkStructureFalseSharingConcurrent(b *testing.B) {
+//	s := createSlice(iterationFalseSharing)
+//	var counter ConcurrentResult
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		counter = countOddsButConcurrent(s)
+//	}
+//	b.StopTimer()
+//	result = counter.firstHalfOdds + counter.secondHalfOdds
+//}
+//
+//type ConcurrentResult struct {
+//	firstHalfOdds  int
+//	secondHalfOdds int
+//}
+//
+//func countOddsButConcurrent(s []int) ConcurrentResult {
+//	counter := ConcurrentResult{}
+//	wg := sync.WaitGroup{}
+//	wg.Add(2)
+//	go func() {
+//		for i := 0; i < len(s)/2; i++ {
+//			if s[i]%2 == 0 {
+//				counter.firstHalfOdds++
+//			}
+//		}
+//		wg.Done()
+//	}()
+//	go func() {
+//		for i := len(s) / 2; i < len(s); i++ {
+//			if s[i]%2 == 0 {
+//				counter.secondHalfOdds++
+//			}
+//		}
+//		wg.Done()
+//	}()
+//	wg.Wait()
+//	return counter
+//}
+//
+//func BenchmarkStructureFalseSharingConcurrent2(b *testing.B) {
+//	s := createSlice(iterationFalseSharing)
+//	var counter ConcurrentResultWithPadding
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		counter = countOddsButConcurrent2(s)
+//	}
+//	b.StopTimer()
+//	result = counter.firstHalfOdds + counter.secondHalfOdds
+//}
+//
+//type ConcurrentResultWithPadding struct {
+//	firstHalfOdds  int
+//	_              CacheLinePad
+//	secondHalfOdds int
+//}
+//
+//func countOddsButConcurrent2(s []int) ConcurrentResultWithPadding {
+//	counter := ConcurrentResultWithPadding{}
+//	wg := sync.WaitGroup{}
+//	wg.Add(2)
+//	go func() {
+//		for i := 0; i < len(s)/2; i++ {
+//			if s[i]%2 == 0 {
+//				counter.firstHalfOdds++
+//			}
+//		}
+//		wg.Done()
+//	}()
+//	go func() {
+//		for i := len(s) / 2; i < len(s); i++ {
+//			if s[i]%2 == 0 {
+//				counter.secondHalfOdds++
+//			}
+//		}
+//		wg.Done()
+//	}()
+//	wg.Wait()
+//	return counter
+//}
+
+func BenchmarkLoopInterchange(b *testing.B) {
+	m := createMatrix(5000, 100)
+	runtime.GC()
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(2)
-		go func() {
-			for j := 0; j < iteration; j++ {
-				structA.n += j
+	for n := 0; n < b.N; n++ {
+		for j := 0; j < 100; j++ {
+			for i := 0; i < 5000; i++ {
+				m[i][j] = 2 * m[i][j]
 			}
-			wg.Done()
-		}()
-		go func() {
-			for j := 0; j < iteration; j++ {
-				structB.n += j
-			}
-			wg.Done()
-		}()
-		wg.Wait()
+		}
 	}
-	b.StopTimer()
 }
 
-func BenchmarkStructurePadding(b *testing.B) {
-	structA := PaddedStruct{}
-	structB := SimpleStruct{}
-	wg := sync.WaitGroup{}
-
+func BenchmarkLoopInterchange2(b *testing.B) {
+	m := createMatrix(5000, 100)
+	runtime.GC()
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(2)
-		go func() {
-			for j := 0; j < iteration; j++ {
-				structA.n += j
+	for n := 0; n < b.N; n++ {
+		for i := 0; i < 5000; i++ {
+			for j := 0; j < 100; j++ {
+				m[i][j] = 2 * m[i][j]
 			}
-			wg.Done()
-		}()
-		go func() {
-			for j := 0; j < iteration; j++ {
-				structB.n += j
-			}
-			wg.Done()
-		}()
-		wg.Wait()
+		}
 	}
-	b.StopTimer()
 }

@@ -1,9 +1,10 @@
 package tests
 
 const (
-	iteration        = 1_000_000
-	matrix           = 1_000
-	CacheLinePadSize = 64
+	iteration             = 1_000_000
+	iterationFalseSharing = 100_000_000
+	matrix                = 1_000
+	CacheLinePadSize      = 64
 )
 
 type CacheLinePad struct {
@@ -64,10 +65,10 @@ type Element2 struct {
 	something [][1024]byte
 }
 
-func createMatrix(n int) [][]int {
+func createMatrix(n, m int) [][]int {
 	matrix := make([][]int, n)
 	for i := 0; i < n; i++ {
-		matrix[i] = make([]int, n)
+		matrix[i] = make([]int, m)
 	}
 	return matrix
 }
