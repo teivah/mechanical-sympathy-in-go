@@ -1,8 +1,10 @@
 package tests
 
 import (
-	"runtime"
+	"fmt"
 	"testing"
+
+	"github.com/clarketm/ncalc/hexadecimal"
 )
 
 //func Benchmark_TraverseSliceOfInts(b *testing.B) {
@@ -165,7 +167,7 @@ import (
 //	b.StopTimer()
 //}
 
-// False sharing example
+//// False sharing example
 //var result int
 //
 //func BenchmarkStructureFalseSharing(b *testing.B) {
@@ -274,28 +276,165 @@ import (
 //	return counter
 //}
 
-func BenchmarkLoopInterchange(b *testing.B) {
-	m := createMatrix(5000, 100)
-	runtime.GC()
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		for j := 0; j < 100; j++ {
-			for i := 0; i < 5000; i++ {
-				m[i][j] = 2 * m[i][j]
-			}
+//func BenchmarkLoopInterchange(b *testing.B) {
+//	m := createMatrix(5000, 100)
+//	runtime.GC()
+//	b.ResetTimer()
+//	for n := 0; n < b.N; n++ {
+//		for j := 0; j < 100; j++ {
+//			for i := 0; i < 5000; i++ {
+//				m[i][j] = 2 * m[i][j]
+//			}
+//		}
+//	}
+//}
+//
+//func BenchmarkLoopInterchange2(b *testing.B) {
+//	m := createMatrix(5000, 100)
+//	runtime.GC()
+//	b.ResetTimer()
+//	for n := 0; n < b.N; n++ {
+//		for i := 0; i < 5000; i++ {
+//			for j := 0; j < 100; j++ {
+//				m[i][j] = 2 * m[i][j]
+//			}
+//		}
+//	}
+//}
+
+// Cache associativity example
+//const size = 512
+//
+//var result int32
+//
+//func TestName(t *testing.T) {
+//	const arraySize = 8
+//	s := make([][arraySize]int64, size)
+//	for j := 0; j < 10; j++ {
+//		for i := 0; i < arraySize; i++ {
+//			fmt.Printf("%d %d: %p \n", j, i, &s[j][i])
+//		}
+//	}
+//}
+//
+//func Benchmark7Size(b *testing.B) {
+//	const arraySize = 16
+//	s := make([][arraySize]int32, size)
+//	var r int32
+//	b.ResetTimer()
+//
+//	for i := 0; i < b.N; i++ {
+//		for j := 0; j < size; j++ {
+//			ss := s[j]
+//			for k := 0; k < arraySize; k++ {
+//				r = ss[k]
+//			}
+//		}
+//	}
+//	result = r
+//}
+//
+//func Benchmark8Size(b *testing.B) {
+//	const arraySize = 17
+//	s := make([][arraySize]int32, size)
+//	var r int32
+//	b.ResetTimer()
+//
+//	for i := 0; i < b.N; i++ {
+//		for j := 0; j < size; j++ {
+//			ss := s[j]
+//			for k := 0; k < arraySize; k++ {
+//				r = ss[k]
+//			}
+//		}
+//	}
+//	result = r
+//}
+
+type testx struct {
+	data      [8]int64
+	something [8192 - 64]byte
+}
+
+func TestName(t *testing.T) {
+	const size = 256
+	s := make([]testx, size)
+	setDistribution := make(map[string]int)
+	blockDistribution := make(map[string]map[string]int)
+	for i := 0; i < size; i++ {
+		v := parse(6, 6, &s[i])
+		setDistribution[v.set]++
+		if blockDistribution[v.set] == nil {
+			blockDistribution[v.set] = make(map[string]int)
 		}
+		blockDistribution[v.set][v.tagBits]++
+	}
+	total := 0
+	for _, v := range setDistribution {
+		fmt.Printf("set: %v\n", v)
+		total += v
+		//for _, v2 := range blockDistribution[k] {
+		//fmt.Printf("block %v\n", v2)
+		//}
+	}
+	fmt.Printf("total: %v\n", total)
+}
+
+type info struct {
+	set     string
+	tagBits string
+}
+
+func parse(block, setSize int, i interface{}) info {
+	b := hexadecimal.Hexadecimal2Binary(fmt.Sprintf("%p", i))
+	return info{
+		set:     b[len(b)-block-setSize : len(b)-block],
+		tagBits: b[:len(b)-block-setSize],
 	}
 }
 
-func BenchmarkLoopInterchange2(b *testing.B) {
-	m := createMatrix(5000, 100)
-	runtime.GC()
+var result int64
+
+type bar struct {
+	data      [8]int64
+	something [1024]byte
+}
+
+func BenchmarkBar(b *testing.B) {
+	const arraySize = 1_000
+	s := [arraySize]bar{}
+	var r int64
 	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		for i := 0; i < 5000; i++ {
-			for j := 0; j < 100; j++ {
-				m[i][j] = 2 * m[i][j]
+
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < arraySize; j++ {
+			ss := s[j].data
+			for k := 0; k < 8; k++ {
+				r = ss[k]
 			}
 		}
 	}
+	result = r
+}
+
+type foo struct {
+	data      [8]int64
+	something [512 - 64]byte
+}
+
+func BenchmarkFoo(b *testing.B) {
+	const arraySize = 1_000
+	s := [arraySize]foo{}
+	var r int64
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < arraySize; j++ {
+			ss := s[j].data
+			for k := 0; k < 8; k++ {
+				r = ss[k]
+			}
+		}
+	}
+	result = r
 }

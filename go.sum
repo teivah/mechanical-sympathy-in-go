@@ -1,0 +1,14 @@
+github.com/clarketm/ncalc v1.2.3 h1:UWqwP2vPSPcULdQXwPoPcK/QHXGo+QU8UPTiBx8WPxg=
+github.com/clarketm/ncalc v1.2.3/go.mod h1:mBIIAe2dnvjbP2g/6RtC90pJ2bRbjiqZD+qQV80glZo=
+github.com/clarketm/pflag v0.0.0-20180816054228-f106652eeb7f h1:n2lGdh59SzWDrWD5YwF/avlpTC/IWa/yPz/jc9JwUJM=
+github.com/clarketm/pflag v0.0.0-20180816054228-f106652eeb7f/go.mod h1:KX3Io0HFFxt2MQzm3PoFSbxkFqCphxqw6Tc//2uNq/A=
+github.com/fatih/color v1.9.0 h1:8xPHl4/q1VyqGIPif1F+1V3Y3lSmrq01EabUW3CoW5s=
+github.com/fatih/color v1.9.0/go.mod h1:eQcE1qtQxscV5RaZvpXrrb8Drkc3/DdQ+uUYCNjL+zU=
+github.com/mattn/go-colorable v0.1.4 h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=
+github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
+github.com/mattn/go-isatty v0.0.8/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
+github.com/mattn/go-isatty v0.0.11 h1:FxPOTFNqGkuDUGi3H/qkUbQO4ZiBa2brKq5r0l8TGeM=
+github.com/mattn/go-isatty v0.0.11/go.mod h1:PhnuNfih5lzO57/f3n+odYbM4JtupLOxQOAqxQCu2WE=
+golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 h1:YyJpGZS1sBuBCzLAR1VEpK193GlqGZbnPFnPV/5Rsb4=
+golang.org/x/sys v0.0.0-20191026070338-33540a1f6037/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

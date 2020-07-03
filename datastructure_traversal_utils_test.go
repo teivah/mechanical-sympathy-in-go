@@ -2,7 +2,7 @@ package tests
 
 const (
 	iteration             = 1_000_000
-	iterationFalseSharing = 100_000_000
+	iterationFalseSharing = 1000_000_000
 	matrix                = 1_000
 	CacheLinePadSize      = 64
 )
