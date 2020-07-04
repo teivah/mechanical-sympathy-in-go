@@ -353,16 +353,17 @@ import (
 
 type testx struct {
 	data      [8]int64
-	something [8192 - 64]byte
+	something [8192 - 64 + 8]byte
 }
 
 func TestName(t *testing.T) {
-	const size = 256
-	s := make([]testx, size)
+	const size = 1025
+	s := make([][size]int64, size)
+	//s := createMatrix(size, size)
 	setDistribution := make(map[string]int)
 	blockDistribution := make(map[string]map[string]int)
 	for i := 0; i < size; i++ {
-		v := parse(6, 6, &s[i])
+		v := parse(6, 7, &s[i])
 		setDistribution[v.set]++
 		if blockDistribution[v.set] == nil {
 			blockDistribution[v.set] = make(map[string]int)
@@ -387,54 +388,91 @@ type info struct {
 
 func parse(block, setSize int, i interface{}) info {
 	b := hexadecimal.Hexadecimal2Binary(fmt.Sprintf("%p", i))
+	fmt.Printf("%v\n", b)
 	return info{
 		set:     b[len(b)-block-setSize : len(b)-block],
 		tagBits: b[:len(b)-block-setSize],
 	}
 }
 
-var result int64
+//var result int64
+//
+//type bar struct {
+//	data      [8]int64
+//	something [1024]byte
+//}
+//
+//func BenchmarkBar(b *testing.B) {
+//	const arraySize = 1_000
+//	s := [arraySize]bar{}
+//	var r int64
+//	b.ResetTimer()
+//
+//	for i := 0; i < b.N; i++ {
+//		for j := 0; j < arraySize; j++ {
+//			ss := s[j].data
+//			for k := 0; k < 8; k++ {
+//				r = ss[k]
+//			}
+//		}
+//	}
+//	result = r
+//}
+//
+//type foo struct {
+//	data      [8]int64
+//	something [512 - 64]byte
+//}
+//
+//func BenchmarkFoo(b *testing.B) {
+//	const arraySize = 1_000
+//	s := [arraySize]foo{}
+//	var r int64
+//	b.ResetTimer()
+//
+//	for i := 0; i < b.N; i++ {
+//		for j := 0; j < arraySize; j++ {
+//			ss := s[j].data
+//			for k := 0; k < 8; k++ {
+//				r = ss[k]
+//			}
+//		}
+//	}
+//	result = r
+//}
 
-type bar struct {
-	data      [8]int64
-	something [1024]byte
+func TestX(t *testing.T) {
+	m := createMatrix(512, 512)
+	transpose(m)
 }
 
-func BenchmarkBar(b *testing.B) {
-	const arraySize = 1_000
-	s := [arraySize]bar{}
-	var r int64
+func BenchmarkTranspose1(b *testing.B) {
+	const n = 2048
+	m := createMatrix(n, n)
 	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < arraySize; j++ {
-			ss := s[j].data
-			for k := 0; k < 8; k++ {
-				r = ss[k]
-			}
+		transpose(m)
+	}
+}
+
+func BenchmarkTranspose2(b *testing.B) {
+	const n = 2049
+	m := createMatrix(n, n)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		transpose(m)
+	}
+}
+
+func transpose(m [][]int32) {
+	length := len(m)
+	for i := 0; i < length; i++ {
+		for j := 0; j < length; j++ {
+			m[i][j], m[j][i] = m[j][i], m[i][j]
 		}
 	}
-	result = r
 }
 
-type foo struct {
-	data      [8]int64
-	something [512 - 64]byte
-}
-
-func BenchmarkFoo(b *testing.B) {
-	const arraySize = 1_000
-	s := [arraySize]foo{}
-	var r int64
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
-		for j := 0; j < arraySize; j++ {
-			ss := s[j].data
-			for k := 0; k < 8; k++ {
-				r = ss[k]
-			}
-		}
-	}
-	result = r
-}
+// 100 11100 010000 // 10000
+// 101 11100 000000 // 12032
+// 110 11100 000000 // 14080

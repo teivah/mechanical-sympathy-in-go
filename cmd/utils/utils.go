@@ -8,10 +8,10 @@ func CreateSlice(n int) []int {
 	return make([]int, n)
 }
 
-func CreateMatrix(n int) [][]int {
-	matrix := make([][]int, n)
+func CreateMatrix(n int) [][]int32 {
+	matrix := make([][]int32, n)
 	for i := 0; i < n; i++ {
-		matrix[i] = make([]int, n)
+		matrix[i] = make([]int32, n)
 	}
 	return matrix
 }

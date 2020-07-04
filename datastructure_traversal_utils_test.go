@@ -65,10 +65,10 @@ type Element2 struct {
 	something [][1024]byte
 }
 
-func createMatrix(n, m int) [][]int {
-	matrix := make([][]int, n)
+func createMatrix(n, m int) [][]int32 {
+	matrix := make([][]int32, n)
 	for i := 0; i < n; i++ {
-		matrix[i] = make([]int, m)
+		matrix[i] = make([]int32, m)
 	}
 	return matrix
 }

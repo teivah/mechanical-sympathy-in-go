@@ -15,20 +15,14 @@ func main() {
 	fmt.Printf("%v\n", func2(iterations))
 }
 
-type bar struct {
-	data      [8]int64
-	something [8192 - 64]byte
-}
-
 func func2(n int) int64 {
-	const size = 512
-	s := make([]bar, size)
+	const size = 1025
+	s := make([][size]int64, n)
 	var r int64
 	for i := 0; i < n; i++ {
-		for j := 0; j < size; j++ {
-			cacheLine := s[j].data
+		for j := 0; j < n; j++ {
 			for k := 0; k < 8; k++ {
-				r = cacheLine[k]
+				r = s[j][k]
 			}
 		}
 	}
