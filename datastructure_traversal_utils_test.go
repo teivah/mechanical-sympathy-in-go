@@ -2,7 +2,7 @@ package tests
 
 const (
 	iteration             = 1_000_000
-	iterationFalseSharing = 1000_000_000
+	iterationFalseSharing = 500_000_000
 	matrix                = 1_000
 	CacheLinePadSize      = 64
 )
@@ -71,13 +71,4 @@ func createMatrix(n, m int) [][]int32 {
 		matrix[i] = make([]int32, m)
 	}
 	return matrix
-}
-
-type SimpleStruct struct {
-	n int
-}
-
-type PaddedStruct struct {
-	n int
-	_ CacheLinePad
 }

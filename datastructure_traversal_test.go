@@ -3,6 +3,7 @@ package tests
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/clarketm/ncalc/hexadecimal"
 )
@@ -118,8 +119,8 @@ import (
 //}
 
 //func BenchmarkStructureFalseSharing(b *testing.B) {
-//	structA := SimpleStruct{}
-//	structB := SimpleStruct{}
+//	structA := Struct{}
+//	structB := Struct{}
 //	wg := sync.WaitGroup{}
 //
 //	b.ResetTimer()
@@ -127,13 +128,13 @@ import (
 //		wg.Add(2)
 //		go func() {
 //			for j := 0; j < iteration; j++ {
-//				structA.n += j
+//				structA.var1 += j
 //			}
 //			wg.Done()
 //		}()
 //		go func() {
 //			for j := 0; j < iteration; j++ {
-//				structB.n += j
+//				structB.var1 += j
 //			}
 //			wg.Done()
 //		}()
@@ -141,10 +142,11 @@ import (
 //	}
 //	b.StopTimer()
 //}
+
 //
 //func BenchmarkStructurePadding(b *testing.B) {
 //	structA := PaddedStruct{}
-//	structB := SimpleStruct{}
+//	structB := Struct{}
 //	wg := sync.WaitGroup{}
 //
 //	b.ResetTimer()
@@ -152,13 +154,13 @@ import (
 //		wg.Add(2)
 //		go func() {
 //			for j := 0; j < iteration; j++ {
-//				structA.n += j
+//				structA.var1 += j
 //			}
 //			wg.Done()
 //		}()
 //		go func() {
 //			for j := 0; j < iteration; j++ {
-//				structB.n += j
+//				structB.var1 += j
 //			}
 //			wg.Done()
 //		}()
@@ -280,7 +282,7 @@ import (
 //	m := createMatrix(5000, 100)
 //	runtime.GC()
 //	b.ResetTimer()
-//	for n := 0; n < b.N; n++ {
+//	for var1 := 0; var1 < b.N; var1++ {
 //		for j := 0; j < 100; j++ {
 //			for i := 0; i < 5000; i++ {
 //				m[i][j] = 2 * m[i][j]
@@ -293,7 +295,7 @@ import (
 //	m := createMatrix(5000, 100)
 //	runtime.GC()
 //	b.ResetTimer()
-//	for n := 0; n < b.N; n++ {
+//	for var1 := 0; var1 < b.N; var1++ {
 //		for i := 0; i < 5000; i++ {
 //			for j := 0; j < 100; j++ {
 //				m[i][j] = 2 * m[i][j]
@@ -312,7 +314,7 @@ import (
 //	s := make([][arraySize]int64, size)
 //	for j := 0; j < 10; j++ {
 //		for i := 0; i < arraySize; i++ {
-//			fmt.Printf("%d %d: %p \n", j, i, &s[j][i])
+//			fmt.Printf("%d %d: %p \var1", j, i, &s[j][i])
 //		}
 //	}
 //}
@@ -357,41 +359,64 @@ type testx struct {
 }
 
 func TestName(t *testing.T) {
-	const size = 1025
-	s := make([][size]int64, size)
-	//s := createMatrix(size, size)
-	setDistribution := make(map[string]int)
-	blockDistribution := make(map[string]map[string]int)
-	for i := 0; i < size; i++ {
-		v := parse(6, 7, &s[i])
-		setDistribution[v.set]++
-		if blockDistribution[v.set] == nil {
-			blockDistribution[v.set] = make(map[string]int)
-		}
-		blockDistribution[v.set][v.tagBits]++
+	const size = 1024
+	s := make([][size]byte, size)
+
+	for i := 0; i < 8; i++ {
+		parse(6, 7, &s[0][i])
 	}
-	total := 0
-	for _, v := range setDistribution {
-		fmt.Printf("set: %v\n", v)
-		total += v
-		//for _, v2 := range blockDistribution[k] {
-		//fmt.Printf("block %v\n", v2)
-		//}
-	}
-	fmt.Printf("total: %v\n", total)
+	parse(2, 7, &s[1][0])
+
+	//setDistribution := make(map[string]int)
+	//blockDistribution := make(map[string]map[string]int)
+	//for i := 0; i < size; i++ {
+	//	v := parse(6, 7, &s[i])
+	//	setDistribution[v.set]++
+	//	if blockDistribution[v.set] == nil {
+	//		blockDistribution[v.set] = make(map[string]int)
+	//	}
+	//	blockDistribution[v.set][v.tagBits]++
+	//}
+	//total := 0
+	//for _, v := range setDistribution {
+	//	fmt.Printf("set: %v\var1", v)
+	//	total += v
+	//	//for _, v2 := range blockDistribution[k] {
+	//	//fmt.Printf("block %v\var1", v2)
+	//	//}
+	//}
+	//fmt.Printf("total: %v\var1", total)
+}
+
+func TestName2(t *testing.T) {
+	const size = 1024
+
+	go func() {
+		s := make([][size]byte, size)
+		i := parse(6, 7, &s[0]) // 1100000000000000000011000010000000000000 824634515456
+		fmt.Printf("%#v\n", i.binary)
+	}()
+	go func() {
+		s := make([][size]byte, size)
+		i := parse(6, 7, &s[0]) // 1100000000000000000111001100000000000000 824635604992
+		fmt.Printf("%#v\n", i.binary)
+	}()
+	time.Sleep(250 * time.Millisecond)
+
 }
 
 type info struct {
 	set     string
 	tagBits string
+	binary  string
 }
 
 func parse(block, setSize int, i interface{}) info {
 	b := hexadecimal.Hexadecimal2Binary(fmt.Sprintf("%p", i))
-	fmt.Printf("%v\n", b)
 	return info{
 		set:     b[len(b)-block-setSize : len(b)-block],
 		tagBits: b[:len(b)-block-setSize],
+		binary:  b,
 	}
 }
 
@@ -446,23 +471,23 @@ func TestX(t *testing.T) {
 	transpose(m)
 }
 
-func BenchmarkTranspose1(b *testing.B) {
-	const n = 2048
-	m := createMatrix(n, n)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		transpose(m)
-	}
-}
-
-func BenchmarkTranspose2(b *testing.B) {
-	const n = 2049
-	m := createMatrix(n, n)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		transpose(m)
-	}
-}
+//func BenchmarkTranspose1(b *testing.B) {
+//	const n = 2048
+//	m := createMatrix(n, n)
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		transpose(m)
+//	}
+//}
+//
+//func BenchmarkTranspose2(b *testing.B) {
+//	const n = 2049
+//	m := createMatrix(n, n)
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		transpose(m)
+//	}
+//}
 
 func transpose(m [][]int32) {
 	length := len(m)

@@ -20,7 +20,7 @@ func func2(n int) int64 {
 	s := make([][size]int64, n)
 	var r int64
 	for i := 0; i < n; i++ {
-		for j := 0; j < n; j++ {
+		for j := 0; j < 1024; j++ {
 			for k := 0; k < 8; k++ {
 				r = s[j][k]
 			}
