@@ -2,25 +2,25 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strconv"
-
-	"github.com/teivah/mechanical-sympathy-in-go/cmd/utils"
 )
 
-func main() {
-	in := os.Args[1]
-	iterations, err := strconv.Atoi(in)
-	if err != nil {
-		log.Fatal(err)
-	}
+type Element struct {
+	Value     int
+	Something [1024]byte
+}
 
-	s := utils.CreateSliceOfStructures(iterations)
+func main() {
+	const iterations = 100
+	s := make([]Element, iterations)
 	sum := 0
+
 	for i := 0; i < iterations; i++ {
 		sum += s[i].Value
 	}
 
 	fmt.Printf("%v\n", sum)
+
+	for i := 0; i < 1000; i++ {
+		sum += s[i].Value
+	}
 }

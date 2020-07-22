@@ -56,42 +56,6 @@ import (
 //	}
 //}
 
-//// Constant stride
-//func Benchmark_TraverseSliceOfElementOnly(b *testing.B) {
-//	s := createElementOnly(iteration)
-//	b.ResetTimer()
-//	for i := 0; i < b.N; i++ {
-//		sum := 0
-//		for i := 0; i < iteration; i++ {
-//			sum += s[i].value
-//		}
-//	}
-//}
-//
-//// Constant stride
-//func Benchmark_TraverseSliceOfStructures(b *testing.B) {
-//	s := createSliceOfStructures(iteration)
-//	b.ResetTimer()
-//	for i := 0; i < b.N; i++ {
-//		sum := 0
-//		for i := 0; i < iteration; i++ {
-//			sum += s[i].value
-//		}
-//	}
-//}
-//
-//// Unit stride
-//func Benchmark_TraverseStructureOfSlices(b *testing.B) {
-//	s := createStructureOfSlices(iteration)
-//	b.ResetTimer()
-//	for i := 0; i < b.N; i++ {
-//		sum := 0
-//		for i := 0; i < iteration; i++ {
-//			sum += s.values[i]
-//		}
-//	}
-//}
-
 //func Benchmark_TraverseMatrix_Row(b *testing.B) {
 //	m := createMatrix(matrix)
 //	b.ResetTimer()
